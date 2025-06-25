@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="../estilos.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <h2>Iniciar Sesión</h2>
+        <form id="loginForm" autocomplete="off" novalidate>
+            <div class="error-message" id="errorMsg"></div>
+            <div class="input-group">
+                <i class="fa fa-user"></i>
+                <input type="text" id="username" name="username" placeholder="Correo electrónico o usuario" required autofocus>
+            </div>
+            <div class="input-group" style="position:relative;">
+                <i class="fa fa-lock" style="position:absolute; left:10px; top:50%; transform:translateY(-50%);"></i>
+                <input type="password" id="password" name="password" placeholder="Contraseña" required minlength="6" style="padding-left:35px; padding-right:35px;">
+                <i class="fa fa-eye toggle-password" id="togglePassword" title="Mostrar/Ocultar contraseña" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;"></i>
+            </div>
+            <div class="login-options">
+                <label><input type="checkbox" id="remember"> Recuérdame</label>
+                <a href="#">¿Olvidaste tu contraseña?</a>
+            </div>
+            <button type="submit" class="login-btn">Entrar</button>
+        </form>
+        <div class="divider">o</div>
+        <div class="social-login">
+            <button class="social-btn" title="Google"><i class="fab fa-google"></i></button>
+            <button class="social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+            <button class="social-btn" title="Twitter"><i class="fab fa-x-twitter"></i></button>
+        </div>
+        <div class="register-link">
+            ¿No tienes cuenta? <a href="#" id="showRegister">Regístrate</a>
+        </div>
+    </div>
+    <!-- Formulario de registro oculto -->
+    <div class="login-container" id="registerContainer" style="display:none; margin-top:30px;">
+        <h2>Regístrate</h2>
+        <form id="registerForm" autocomplete="off" novalidate>
+            <div class="error-message" id="registerMsg"></div>
+            <div class="input-group">
+                <i class="fa fa-user"></i>
+                <input type="text" id="reg-nombre" name="nombre" placeholder="Nombre" required autofocus>
+            </div>
+            <div class="input-group">
+                <i class="fa fa-user"></i>
+                <input type="text" id="reg-apellido" name="apellido" placeholder="Apellido" required>
+            </div>
+            <div class="input-group">
+                <i class="fa fa-phone"></i>
+                <input type="text" id="reg-celular" name="celular" placeholder="Celular" required>
+            </div>
+            <div class="input-group">
+                <i class="fa fa-envelope"></i>
+                <input type="email" id="reg-correo" name="correo" placeholder="Correo electrónico" required>
+            </div>
+            <div class="input-group">
+                <i class="fa fa-lock"></i>
+                <input type="password" id="reg-password" name="password" placeholder="Contraseña" required minlength="6">
+                <i class="fa fa-eye toggle-password" id="toggleRegPassword" title="Mostrar/Ocultar contraseña"></i>
+            </div>
+            <div class="input-group">
+                <i class="fa fa-home"></i>
+                <input type="text" id="reg-direccion" name="direccion" placeholder="Dirección" required>
+            </div>
+            <button type="submit" class="login-btn">Registrarse</button>
+        </form>
+        <div class="register-link">
+            ¿Ya tienes cuenta? <a href="#" id="showLogin">Inicia sesión</a>
+        </div>
+    </div>
+    <script>
+        // Mostrar/ocultar contraseña login
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const pwd = document.getElementById('password');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            } else {
+                pwd.type = 'password';
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            }
+        });
+
+        // Mostrar/ocultar contraseña registro
+        document.getElementById('toggleRegPassword').addEventListener('click', function() {
+            const pwd = document.getElementById('reg-password');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            } else {
+                pwd.type = 'password';
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            }
+        });
+
+        // Mostrar formulario de registro
+        document.getElementById('showRegister').onclick = function(e) {
+            e.preventDefault();
+            document.querySelector('.login-container').style.display = 'none';
+            document.getElementById('registerContainer').style.display = 'block';
+        };
+        // Mostrar formulario de login
+        document.getElementById('showLogin').onclick = function(e) {
+            e.preventDefault();
+            document.querySelector('.login-container').style.display = 'block';
+            document.getElementById('registerContainer').style.display = 'none';
+        };
+
+        // Validación avanzada del formulario y envío al backend (login)
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const correo = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.style.display = 'none';
+            errorMsg.textContent = '';
+
+            if (!correo || !password) {
+                errorMsg.textContent = 'Por favor, completa todos los campos.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            if (password.length < 6) {
+                errorMsg.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Enviar datos al backend
+            try {
+                const response = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, password })
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    errorMsg.style.color = '#388e3c';
+                    errorMsg.textContent = '¡Inicio de sesión exitoso!';
+                    errorMsg.style.display = 'block';
+                    setTimeout(() => {
+                        errorMsg.style.display = 'none';
+                        // window.location.href = '/paginas/acercade.html';
+                    }, 1500);
+                } else {
+                    errorMsg.style.color = '#d32f2f';
+                    errorMsg.textContent = data.message || 'Usuario o contraseña incorrectos.';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                errorMsg.style.color = '#d32f2f';
+                errorMsg.textContent = 'Error de conexión con el servidor.';
+                errorMsg.style.display = 'block';
+            }
+        });
+
+        // Registro de usuario
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const apellido = document.getElementById('reg-apellido').value.trim();
+            const celular = document.getElementById('reg-celular').value.trim();
+            const correo = document.getElementById('reg-correo').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const direccion = document.getElementById('reg-direccion').value.trim();
+            const msg = document.getElementById('registerMsg');
+            msg.style.display = 'none';
+            msg.textContent = '';
+
+            if (!nombre || !apellido || !celular || !correo || !password || !direccion) {
+                msg.textContent = 'Por favor, completa todos los campos.';
+                msg.style.display = 'block';
+                return;
+            }
+            if (password.length < 6) {
+                msg.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+                msg.style.display = 'block';
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:3000/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido, celular, correo, password, direccion })
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    msg.style.color = '#388e3c';
+                    msg.textContent = '¡Usuario registrado! Ahora puedes iniciar sesión.';
+                    msg.style.display = 'block';
+                    setTimeout(() => {
+                        document.querySelector('.login-container').style.display = 'block';
+                        document.getElementById('registerContainer').style.display = 'none';
+                    }, 1500);
+                } else {
+                    msg.style.color = '#d32f2f';
+                    msg.textContent = data.message || 'Error al registrar.';
+                    msg.style.display = 'block';
+                }
+            } catch (err) {
+                msg.style.color = '#d32f2f';
+                msg.textContent = 'Error de conexión con el servidor.';
+                msg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

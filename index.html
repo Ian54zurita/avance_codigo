@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="estilos.css">
+    <title>Document</title>
+    
+</head>
+<body class="fondo">
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="imagen/html.png" alt="Logo de Laboratorios R&D" width="50" height="50">
+            </div>
+            <ul class="navegacion">
+                <li><a href="">Inicio</a></li>
+                <li><a href="">Productos</a></li>
+                <li><a href="">Contacto</a></li>
+                <li><a href="paginas/iniciosesion.html" class="iniciar-sesion">Iniciar Sesion</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main >
+        <h1 class="animated-title">LABORATORIOS R&amp;D</h1>
+    </main>
+    <footer class="footer-advanced">
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h3>Laboratorios R&D</h3>
+                <p>Innovación y calidad en productos de laboratorio. Comprometidos con la excelencia y el servicio.</p>
+            </div>
+            <div class="footer-section links">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="">Inicio</a></li>
+                    <li><a href="">Productos</a></li>
+                    <li><a href="">Contacto</a></li>
+                    <li><a href="paginas/iniciosesion.html">Iniciar Sesión</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact">
+                <h4>Contacto</h4>
+                <p><i class="fa fa-envelope"></i> info@laboratoriosrd.com</p>
+                <p><i class="fa fa-phone"></i> +51 999 999 999</p>
+                <div class="footer-social">
+                    <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2023 Laboratorios R&D. Todos los derechos reservados.
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+    // Animación de letras (escritura tipo máquina)
+    const title = document.querySelector('.animated-title');
+    const text = title.textContent;
+    title.textContent = '';
+    let i = 0;
+    function typeWriter() {
+      if (i < text.length) {
+        title.textContent += text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 100);
+      }
+    }
+    typeWriter();
+    </script>
+</body>
+</html>

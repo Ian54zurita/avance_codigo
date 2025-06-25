@@ -1,0 +1,284 @@
+body, body.fondo, body.login-page {
+  background: url('imagen/fondo.jpeg') no-repeat center center fixed;
+  background-size: cover;
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+header {
+  background: transparent;
+  padding: 10px;
+  text-align: right;
+}
+.logo { float: left; }
+.navegacion {
+  list-style: none;
+  padding: 0;
+}
+.navegacion li { display: inline; margin-right: 80px; }
+.navegacion a {
+  text-decoration: none;
+  color: #fff;
+}
+.navegacion a:hover { color: #1e85ad; }
+
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  z-index: 10;
+}
+.animated-title {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #1976d2;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-shadow: 1px 1px 1px #ffffff, 0 2px 8px #1976d233;
+  border-right: 3px solid #1976d2;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: blink-caret 0.8s step-end infinite;
+}
+@keyframes blink-caret {
+  0%, 100% { border-color: #1976d2; }
+  50% { border-color: transparent; }
+}
+footer {
+  width: 100%;
+  background: rgba(255,255,255,0.85);
+  text-align: center;
+  padding: 16px 0 8px 0;
+  font-size: 16px;
+  z-index: 10;
+  margin-top: auto;
+}
+@media (max-width: 600px) {
+  .animated-title { font-size: 2rem; }
+}
+
+/* --- LOGIN AVANZADO --- */
+.login-container {
+  background: rgba(255,255,255,0.95);
+  max-width: 400px;
+  margin: 60px auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+  padding: 40px 32px 32px 32px;
+  position: relative;
+  box-sizing: border-box;
+}
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 700;
+  color: #222;
+}
+.input-group { position: relative; margin-bottom: 20px; }
+.input-group input[type="password"],
+.input-group input[type="email"],
+.input-group input[type="text"] {
+  width: 100%;
+  padding: 10px 40px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  background: #f9f9f9;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+.input-group input:focus {
+  border: 1.5px solid #1976d2;
+  outline: none;
+  background: #fff;
+}
+.input-group .fa-lock, .input-group .fa-user, .input-group .fa-envelope, .input-group .fa-phone, .input-group .fa-home {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 18px;
+}
+.input-group .toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.input-group .toggle-password:hover { color: #1976d2; }
+.input-group input[type="email"],
+.input-group input[type="text"] { padding-left: 40px; }
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.login-options label { font-size: 14px; color: #555; }
+.login-options a {
+  font-size: 14px;
+  color: #0078d7;
+  text-decoration: none;
+}
+.login-options a:hover { text-decoration: underline; }
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #0078d7 0%, #005fa3 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.login-btn:hover {
+  background: linear-gradient(90deg, #005fa3 0%, #0078d7 100%);
+}
+.divider {
+  text-align: center;
+  margin: 24px 0 16px 0;
+  color: #aaa;
+  position: relative;
+}
+.divider:before, .divider:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #ddd;
+}
+.divider:before { left: 0; }
+.divider:after { right: 0; }
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+.social-btn {
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  cursor: pointer;
+  font-size: 20px;
+  transition: background 0.2s;
+}
+.social-btn:hover { background: #e0e0e0; }
+.register-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 15px;
+}
+.register-link a {
+  color: #0078d7;
+  text-decoration: none;
+  font-weight: 700;
+}
+.register-link a:hover { text-decoration: underline; }
+.error-message {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-bottom: 12px;
+  display: none;
+}
+/* --- FIN LOGIN AVANZADO --- */
+
+/* Footer avanzado */
+.footer-advanced {
+  background: rgba(25, 118, 210, 0.95);
+  color: #fff;
+  padding: 40px 0 0 0;
+  font-size: 16px;
+  margin-top: 40px;
+  box-shadow: 0 -2px 16px 0 rgba(31,38,135,0.13);
+}
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.footer-section {
+  flex: 1 1 250px;
+  margin: 0 20px 30px 20px;
+}
+.footer-section h3, .footer-section h4 {
+  margin-bottom: 16px;
+  font-size: 1.2em;
+  color: #fff;
+  border-bottom: 2px solid #fff2;
+  padding-bottom: 6px;
+}
+.footer-section.about p {
+  color: #e0e0e0;
+  font-size: 15px;
+}
+.footer-section.links ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-section.links ul li {
+  margin-bottom: 10px;
+}
+.footer-section.links ul li a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-section.links ul li a:hover {
+  color: #ffd600;
+}
+.footer-section.contact p {
+  margin: 8px 0;
+  color: #e0e0e0;
+}
+.footer-section.contact i {
+  margin-right: 8px;
+}
+.footer-social {
+  margin-top: 12px;
+}
+.footer-social a {
+  color: #fff;
+  margin-right: 14px;
+  font-size: 20px;
+  transition: color 0.2s;
+}
+.footer-social a:hover {
+  color: #ffd600;
+}
+.footer-bottom {
+  background: rgba(0,0,0,0.12);
+  color: #e0e0e0;
+  text-align: center;
+  padding: 14px 0 10px 0;
+  font-size: 15px;
+  margin-top: 10px;
+}
+@media (max-width: 800px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+  }
+  .footer-section {
+    margin: 0 0 30px 0;
+    width: 100%;
+    max-width: 400px;
+  }
+}
