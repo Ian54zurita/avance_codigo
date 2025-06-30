@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil | Laboratorios R&D</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%);
+      min-height: 100vh;
+      margin: 0;
+    }
+    .perfil-container {
+      max-width: 520px;
+      margin: 60px auto 40px auto;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+      padding: 38px 36px 32px 36px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInPerfil 0.7s cubic-bezier(.77,0,.18,1);
+    }
+    @keyframes fadeInPerfil { from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: translateY(0);} }
+    .perfil-avatar-grande {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#1976d2 60%,#0d47a1 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 3.2em;
+      font-weight: bold;
+      margin: 0 auto 18px auto;
+      box-shadow: 0 4px 24px #1976d244;
+      border: 4px solid #fff;
+      position: relative;
+      z-index: 2;
+      transition: box-shadow 0.22s;
+    }
+    .perfil-avatar-grande:hover {
+      box-shadow: 0 8px 32px #1976d288;
+    }
+    .perfil-nombre {
+      text-align: center;
+      font-size: 2em;
+      font-weight: 800;
+      color: #1976d2;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+    .perfil-email {
+      text-align: center;
+      color: #333;
+      font-size: 1.08em;
+      margin-bottom: 18px;
+    }
+    .perfil-info {
+      margin: 0 0 18px 0;
+      padding: 0;
+      list-style: none;
+      color: #444;
+      font-size: 1.08em;
+    }
+    .perfil-info li {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .perfil-info i {
+      color: #1976d2;
+      min-width: 22px;
+      text-align: center;
+    }
+    .perfil-actions {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .perfil-actions button {
+      background: linear-gradient(90deg,#1976d2 0%,#0d47a1 100%);
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      padding: 10px 28px;
+      font-size: 1.08em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.13);
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+    .perfil-actions button:hover {
+      background: linear-gradient(90deg,#0d47a1 0%,#1976d2 100%);
+      box-shadow: 0 4px 16px rgba(25,118,210,0.18);
+    }
+    .perfil-badges {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 18px 0 0 0;
+      flex-wrap: wrap;
+    }
+    .perfil-badge {
+      background: #e3f2fd;
+      color: #1976d2;
+      border-radius: 12px;
+      padding: 6px 16px;
+      font-size: 0.98em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 4px #1976d233;
+      margin-bottom: 6px;
+    }
+    .perfil-timeline {
+      margin: 32px 0 0 0;
+      padding: 0 0 0 18px;
+      border-left: 3px solid #1976d2;
+      position: relative;
+    }
+    .perfil-timeline h4 {
+      color: #1976d2;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+    .perfil-timeline-event {
+      margin-bottom: 18px;
+      position: relative;
+    }
+    .perfil-timeline-event:before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      background: #1976d2;
+      border-radius: 50%;
+      border: 2.5px solid #fff;
+      box-shadow: 0 2px 8px #1976d244;
+    }
+    .perfil-timeline-event strong {
+      color: #0d47a1;
+    }
+    .perfil-logout {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      background: none;
+      border: none;
+      color: #1976d2;
+      font-size: 1.5em;
+      cursor: pointer;
+      transition: color 0.18s;
+    }
+    .perfil-logout:hover {
+      color: #0d47a1;
+    }
+  </style>
+</head>
+<body>
+  <div class="perfil-container">
+    <button class="perfil-logout" title="Cerrar sesión" onclick="sessionStorage.removeItem('loggedIn');window.location.href='../index.html';"><i class="fa fa-sign-out-alt"></i></button>
+    <div class="perfil-avatar-grande"><i class="fa fa-user"></i></div>
+    <div class="perfil-nombre" id="nombreUsuario">Usuario Avanzado</div>
+    <div class="perfil-email" id="emailUsuario">usuario@ejemplo.com</div>
+    <ul class="perfil-info">
+      <li><i class="fa fa-calendar"></i> Miembro desde: <span id="fechaRegistro">2024-01-01</span></li>
+      <li><i class="fa fa-award"></i> Nivel: <span id="nivelUsuario">Pro</span></li>
+      <li><i class="fa fa-check-circle"></i> Estado: <span style="color:#43a047;">Activo</span></li>
+    </ul>
+    <div class="perfil-badges">
+      <span class="perfil-badge"><i class="fa fa-robot"></i> Chatbot Pro</span>
+      <span class="perfil-badge"><i class="fa fa-bolt"></i> Automatizador</span>
+      <span class="perfil-badge"><i class="fa fa-shield-alt"></i> Seguridad</span>
+      <span class="perfil-badge"><i class="fa fa-star"></i> Premium</span>
+    </div>
+    <div class="perfil-actions">
+      <button onclick="alert('Funcionalidad de editar perfil próximamente')"><i class="fa fa-edit"></i> Editar perfil</button>
+      <button onclick="alert('Funcionalidad de cambiar contraseña próximamente')"><i class="fa fa-key"></i> Cambiar contraseña</button>
+    </div>
+    <div class="perfil-timeline">
+      <h4>Actividad reciente</h4>
+      <div class="perfil-timeline-event"><strong>26/06/2025:</strong> Inició sesión en la plataforma</div>
+      <div class="perfil-timeline-event"><strong>25/06/2025:</strong> Solicitó una demo de chatbot</div>
+      <div class="perfil-timeline-event"><strong>20/06/2025:</strong> Actualizó su perfil</div>
+      <div class="perfil-timeline-event"><strong>15/06/2025:</strong> Se registró en Laboratorios R&D</div>
+    </div>
+  </div>
+</body>
+</html>

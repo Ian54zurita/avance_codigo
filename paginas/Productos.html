@@ -6,12 +6,20 @@
   <title>Productos | Chatbots y Automatización</title>
   <link rel="stylesheet" href="../estilos.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script>
+    // Redirección si no está logueado
+    if (!sessionStorage.getItem('loggedIn') || sessionStorage.getItem('loggedIn') !== 'true') {
+      sessionStorage.setItem('redirectTo', 'productos');
+      window.location.href = 'iniciosesion.html';
+    }
+  </script>
 </head>
 <body>
   <header>
+    
     <nav>
       <div class="logo">
-        <img src="/imagen/html.png" alt="Logo de Laboratorios R&D" width="50" height="50">
+        <img src="/imagen/RD.png" alt="Logo de Laboratorios R&D" width="50" height="50">
       </div>
       <ul class="navegacion">
         <li><a href="../index.html">Inicio</a></li>
@@ -31,13 +39,13 @@
         <img src="../imagen/fe.jpeg" alt="Chatbot WhatsApp">
         <h3>Chatbot para WhatsApp</h3>
         <p>Automatiza la atención al cliente, ventas y soporte 24/7 en WhatsApp. Integración fácil y respuestas inteligentes.</p>
-        <a href="iniciosesion.html" class="btn-contacto btn-grad" style="margin-top:12px;">Obtener</a>
+        <a href="planes.html" class="btn-contacto btn-grad" style="margin-top:12px;">Obtener</a>
       </div>
       <div class="card card-glass">
         <img src="../imagen/fondo.jpeg" alt="Asistente Jira">
         <h3>Asistente Inteligente para Jira</h3>
         <p>Gestiona tareas, tickets y reportes en Jira con comandos conversacionales y automatización avanzada.</p>
-        <a href="iniciosesion.html" class="btn-contacto btn-grad" style="margin-top:12px;">Obtener</a>
+        <a href="planes.html" class="btn-contacto btn-grad" style="margin-top:12px;">Obtener</a>
       </div>
       <div class="card card-glass">
         <img src="../imagen/html.png" alt="Integraciones API">
@@ -87,5 +95,126 @@
     </div>
   </footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script>
+    (function(){
+      const nav = document.querySelector('.navegacion');
+      const loginBtn = nav ? nav.querySelector('.iniciar-sesion') : null;
+      if (sessionStorage.getItem('loggedIn') === 'true') {
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (nav && !document.getElementById('perfilMenuBtn')) {
+          // Elimina botón cerrar sesión si existe
+          const oldBtn = nav.querySelector('button.btn-contacto');
+          if (oldBtn) oldBtn.parentNode.remove();
+          // Crea botón perfil
+          const li = document.createElement('li');
+          li.style.position = 'relative';
+          const btn = document.createElement('button');
+          btn.className = 'perfil-menu-btn';
+          btn.id = 'perfilMenuBtn';
+          btn.innerHTML = '<span class="perfil-avatar"><i class="fa fa-user"></i></span> Tu perfil <i class="fa fa-chevron-down"></i>';
+          const dropdown = document.createElement('div');
+          dropdown.className = 'perfil-dropdown';
+          dropdown.innerHTML = `
+            <a href="perfil.html" id="verPerfil"><i class="fa fa-id-badge"></i> Ver perfil</a>
+            <button id="cerrarSesionPerfil"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</button>
+          `;
+          li.appendChild(btn);
+          li.appendChild(dropdown);
+          nav.appendChild(li);
+          btn.onclick = function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+          };
+          document.addEventListener('click', function(e){
+            if (!li.contains(e.target)) dropdown.classList.remove('show');
+          });
+          dropdown.querySelector('#cerrarSesionPerfil').onclick = function(){
+            sessionStorage.removeItem('loggedIn');
+            sessionStorage.removeItem('redirectTo');
+            window.location.href = '../index.html';
+          };
+          dropdown.querySelector('#verPerfil').onclick = function(e){
+            dropdown.classList.remove('show');
+          };
+        }
+      } else {
+        if (loginBtn) loginBtn.style.display = '';
+        // Elimina menú perfil si existe
+        const perfilBtn = nav ? nav.querySelector('#perfilMenuBtn') : null;
+        if (perfilBtn && perfilBtn.parentNode) perfilBtn.parentNode.remove();
+      }
+    })();
+    </script>
+    <style>
+    .perfil-menu-btn {
+      background: none;
+      color: #1976d2;
+      border: none;
+      border-radius: 22px;
+      padding: 8px 22px 8px 16px;
+      font-weight: 600;
+      font-size: 1.08em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: none;
+      position: relative;
+      transition: color 0.2s;
+      outline: none;
+    }
+    .perfil-menu-btn:hover, .perfil-menu-btn:focus {
+      color: #0d47a1;
+      background: none;
+      box-shadow: none;
+    }
+    .perfil-avatar {
+      background: none;
+      color: #1976d2;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2em;
+      font-weight: bold;
+      box-shadow: none;
+      border: none;
+      transition: color 0.18s;
+    }
+    .perfil-menu-btn:hover .perfil-avatar, .perfil-menu-btn:focus .perfil-avatar {
+      color: #0d47a1;
+    }
+    .perfil-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      min-width: 170px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+      z-index: 100;
+      padding: 10px 0;
+      animation: fadeInPerfil 0.22s;
+    }
+    @keyframes fadeInPerfil { from { opacity: 0; transform: translateY(-10px);} to { opacity: 1; transform: translateY(0);} }
+    .perfil-dropdown.show { display: block; }
+    .perfil-dropdown a, .perfil-dropdown button {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      color: #1976d2;
+      text-align: left;
+      padding: 10px 22px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      text-decoration: none;
+    }
+    .perfil-dropdown a:hover, .perfil-dropdown button:hover {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+    </style>
 </body>
 </html>

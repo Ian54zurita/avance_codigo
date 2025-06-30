@@ -150,10 +150,19 @@
                     errorMsg.style.color = '#388e3c';
                     errorMsg.textContent = '¡Inicio de sesión exitoso!';
                     errorMsg.style.display = 'block';
+                    // Guardar sesión
+                    sessionStorage.setItem('loggedIn', 'true');
                     setTimeout(() => {
                         errorMsg.style.display = 'none';
-                        // window.location.href = '/paginas/acercade.html';
-                    }, 1500);
+                        // Redirección inteligente
+                        const destino = sessionStorage.getItem('redirectTo');
+                        if (destino === 'productos') {
+                            sessionStorage.removeItem('redirectTo');
+                            window.location.href = 'Productos.html';
+                        } else {
+                            window.location.href = '../index.html';
+                        }
+                    }, 1000);
                 } else {
                     errorMsg.style.color = '#d32f2f';
                     errorMsg.textContent = data.message || 'Usuario o contraseña incorrectos.';

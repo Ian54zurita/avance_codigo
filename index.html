@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="estilos.css">
-    <title>Document</title>
+    <title>LabsRd</title>
+    
     
 </head>
 <body class="fondo">
     <header>
         <nav>
             <div class="logo">
-                <img src="imagen/html.png" alt="Logo de Laboratorios R&D" width="50" height="50">
+                <img src="imagen/RD.png" alt="Logo de Laboratorios R&D" width="50" height="50">
             </div>
             <ul class="navegacion">
                 <li><a href="">Inicio</a></li>
@@ -21,11 +22,138 @@
             </ul>
         </nav>
     </header>
+    <style>
+    .perfil-menu-btn {
+      background: none;
+      color: #1976d2;
+      border: none;
+      border-radius: 22px;
+      padding: 8px 22px 8px 16px;
+      font-weight: 600;
+      font-size: 1.08em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: none;
+      position: relative;
+      transition: color 0.2s;
+      outline: none;
+    }
+    .perfil-menu-btn:hover, .perfil-menu-btn:focus {
+      color: #0d47a1;
+      background: none;
+      box-shadow: none;
+    }
+    .perfil-avatar {
+      background: none;
+      color: #1976d2;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2em;
+      font-weight: bold;
+      box-shadow: none;
+      border: none;
+      transition: color 0.18s;
+    }
+    .perfil-menu-btn:hover .perfil-avatar, .perfil-menu-btn:focus .perfil-avatar {
+      color: #0d47a1;
+    }
+    .perfil-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      min-width: 170px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+      z-index: 100;
+      padding: 10px 0;
+      animation: fadeInPerfil 0.22s;
+    }
+    @keyframes fadeInPerfil { from { opacity: 0; transform: translateY(-10px);} to { opacity: 1; transform: translateY(0);} }
+    .perfil-dropdown.show { display: block; }
+    .perfil-dropdown a, .perfil-dropdown button {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      color: #1976d2;
+      text-align: left;
+      padding: 10px 22px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      text-decoration: none;
+    }
+    .perfil-dropdown a:hover, .perfil-dropdown button:hover {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+    </style>
+    <script>
+    (function(){
+      const nav = document.querySelector('.navegacion');
+      const loginBtn = nav ? nav.querySelector('.iniciar-sesion') : null;
+      if (sessionStorage.getItem('loggedIn') === 'true') {
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (nav && !document.getElementById('perfilMenuBtn')) {
+          // Elimina botón cerrar sesión si existe
+          const oldBtn = nav.querySelector('button.btn-contacto');
+          if (oldBtn) oldBtn.parentNode.remove();
+          // Crea botón perfil
+          const li = document.createElement('li');
+          li.style.position = 'relative';
+          const btn = document.createElement('button');
+          btn.className = 'perfil-menu-btn';
+          btn.id = 'perfilMenuBtn';
+          btn.innerHTML = '<span class="perfil-avatar"><i class="fa fa-user"></i></span> Tu perfil <i class="fa fa-chevron-down"></i>';
+          // Dropdown
+          const dropdown = document.createElement('div');
+          dropdown.className = 'perfil-dropdown';
+          dropdown.innerHTML = `
+            <a href="paginas/perfil.html" id="verPerfil"><i class="fa fa-id-badge"></i> Ver perfil</a>
+            <button id="cerrarSesionPerfil"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</button>
+          `;
+          li.appendChild(btn);
+          li.appendChild(dropdown);
+          nav.appendChild(li);
+          // Toggle menú
+          btn.onclick = function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+          };
+          // Cerrar menú al hacer click fuera
+          document.addEventListener('click', function(e){
+            if (!li.contains(e.target)) dropdown.classList.remove('show');
+          });
+          // Cerrar sesión
+          dropdown.querySelector('#cerrarSesionPerfil').onclick = function(){
+            sessionStorage.removeItem('loggedIn');
+            sessionStorage.removeItem('redirectTo');
+            window.location.href = 'index.html';
+          };
+          // Ver perfil (puedes personalizar la acción)
+          dropdown.querySelector('#verPerfil').onclick = function(e){
+            dropdown.classList.remove('show');
+          };
+        }
+      } else {
+        if (loginBtn) loginBtn.style.display = '';
+        // Elimina menú perfil si existe
+        const perfilBtn = nav ? nav.querySelector('#perfilMenuBtn') : null;
+        if (perfilBtn && perfilBtn.parentNode) perfilBtn.parentNode.remove();
+      }
+    })();
+    </script>
     <main class="main-column">
-        <div class="banner-fondo">
-            <img src="imagen/fondo.jpeg" alt="Banner Laboratorios R&D" class="banner-img">
-            <h1 class="animated-title">LABORATORIOS R&amp;D</h1>
+        <div class="banner-fondo" style="background:none; box-shadow:none;">
+            <img src="imagen/fondo.jpeg" alt="Banner Laboratorios R&D" class="banner-img" style="display:none;">
+            <h1 class="animated-title" style="font-size:3.2em; font-weight:900; color:#1976d2; letter-spacing:0.04em; margin:60px 0 0 0; text-align:center;">LABORATORIOS R&amp;D</h1>
         </div>
+        <div style="height:220px;"></div>
         <section class="contenido-avanzado">
             <p class="bienvenida">Bienvenido a nuestra plataforma, donde la inteligencia artificial potencia tu productividad y atención al cliente. Ofrecemos soluciones avanzadas de chatbots para WhatsApp y asistentes inteligentes que optimizan la gestión de proyectos en Jira.</p>
             <div class="cards-servicios">

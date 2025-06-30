@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planes y Suscripciones | Laboratorios R&D</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body { background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%); min-height: 100vh; }
+    .planes-container {
+      max-width: 900px;
+      margin: 60px auto 40px auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .plan-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px 0 rgba(31,38,135,0.13);
+      padding: 36px 32px 32px 32px;
+      min-width: 260px;
+      max-width: 320px;
+      flex: 1 1 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: box-shadow 0.18s, transform 0.18s;
+      border: 2.5px solid #e3f2fd;
+    }
+    .plan-card:hover {
+      box-shadow: 0 12px 40px 0 rgba(25,118,210,0.18);
+      transform: translateY(-6px) scale(1.03);
+      border-color: #1976d2;
+    }
+    .plan-title {
+      font-size: 1.35em;
+      font-weight: 800;
+      color: #1976d2;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+    .plan-price {
+      font-size: 2.1em;
+      font-weight: 900;
+      color: #0d47a1;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .plan-desc {
+      color: #444;
+      font-size: 1.08em;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px 0;
+      color: #1976d2;
+      font-size: 1em;
+    }
+    .plan-features li {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .plan-features i {
+      color: #43a047;
+    }
+    .plan-btn {
+      background: linear-gradient(90deg,#1976d2 0%,#0d47a1 100%);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 32px;
+      font-size: 1.08em;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.13);
+      transition: background 0.18s, box-shadow 0.18s;
+      margin-top: 10px;
+    }
+    .plan-btn:hover {
+      background: linear-gradient(90deg,#0d47a1 0%,#1976d2 100%);
+      box-shadow: 0 4px 16px rgba(25,118,210,0.18);
+    }
+    .plan-badge {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: #1976d2;
+      color: #fff;
+      font-size: 0.92em;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 4px 14px;
+      letter-spacing: 0.03em;
+      box-shadow: 0 1px 4px #1976d233;
+    }
+    /* Estilos para el modal de pago */
+    #pago-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(25, 118, 210, 0.13);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #pago-modal > div {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+      padding: 36px 32px;
+      max-width: 370px;
+      width: 90vw;
+      position: relative;
+    }
+    #pago-modal h2 {
+      color: #1976d2;
+      text-align: center;
+      font-size: 1.3em;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+    #pago-modal label {
+      font-weight: 600;
+      color: #0d47a1;
+    }
+    #pago-modal select,
+    #pago-modal input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1.5px solid #e3f2fd;
+      margin-top: 6px;
+      font-size: 1em;
+    }
+    #pago-modal button {
+      width: 100%;
+      background: linear-gradient(90deg,#1976d2 0%,#0d47a1 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 0;
+      font-weight: 700;
+      font-size: 1.08em;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+    #pago-modal .close-modal {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      color: #1976d2;
+      cursor: pointer;
+    }
+    #pago-modal #qrPago {
+      display: block;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    #pago-modal #tarjetaPago,
+    #pago-modal #paypalPago {
+      display: none;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    #pago-modal .confirmacion-pago {
+      text-align: center;
+      color: #888;
+      font-size: 0.98em;
+    }
+  </style>
+</head>
+<body>
+  <header style="margin-bottom: 24px;">
+    <nav>
+      <div class="logo">
+        <img src="../imagen/RD.png" alt="Logo de Laboratorios R&D" width="50" height="50">
+      </div>
+      <ul class="navegacion">
+        <li><a href="../index.html">Inicio</a></li>
+        <li><a href="Productos.html">Productos</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+        <li><a href="iniciosesion.html" class="iniciar-sesion">Iniciar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1 style="text-align:center; color:#1976d2; font-size:2.2em; font-weight:900; margin-bottom:32px;">Elige tu plan</h1>
+    <div class="planes-container">
+      <div class="plan-card">
+        <span class="plan-badge">Mensual</span>
+        <div class="plan-title">Monthly Professional</div>
+        <div class="plan-price">$49<span style="font-size:0.5em; font-weight:400;">/mes</span></div>
+        <div class="plan-desc">Ideal para equipos pequeños y profesionales que buscan automatización y soporte premium.</div>
+        <ul class="plan-features">
+          <li><i class="fa fa-check"></i> Hasta 5 usuarios</li>
+          <li><i class="fa fa-check"></i> Soporte prioritario</li>
+          <li><i class="fa fa-check"></i> Integración WhatsApp/Jira</li>
+          <li><i class="fa fa-check"></i> Actualizaciones automáticas</li>
+        </ul>
+        <button class="plan-btn" onclick="alert('Contratación Monthly Professional')">Seleccionar</button>
+      </div>
+      <div class="plan-card">
+        <span class="plan-badge">Mensual</span>
+        <div class="plan-title">Monthly Enterprise</div>
+        <div class="plan-price">$99<span style="font-size:0.5em; font-weight:400;">/mes</span></div>
+        <div class="plan-desc">Para empresas que requieren escalabilidad, seguridad avanzada y soporte dedicado.</div>
+        <ul class="plan-features">
+          <li><i class="fa fa-check"></i> Usuarios ilimitados</li>
+          <li><i class="fa fa-check"></i> Integraciones personalizadas</li>
+          <li><i class="fa fa-check"></i> SLA empresarial</li>
+          <li><i class="fa fa-check"></i> Soporte 24/7</li>
+        </ul>
+        <button class="plan-btn" onclick="alert('Contratación Monthly Enterprise')">Seleccionar</button>
+      </div>
+      <div class="plan-card">
+        <span class="plan-badge" style="background:#43a047;">Anual</span>
+        <div class="plan-title">Yearly Professional</div>
+        <div class="plan-price">$499<span style="font-size:0.5em; font-weight:400;">/año</span></div>
+        <div class="plan-desc">Ahorra 2 meses. Todas las ventajas del plan Professional con pago anual.</div>
+        <ul class="plan-features">
+          <li><i class="fa fa-check"></i> Hasta 5 usuarios</li>
+          <li><i class="fa fa-check"></i> Soporte prioritario</li>
+          <li><i class="fa fa-check"></i> Integración WhatsApp/Jira</li>
+          <li><i class="fa fa-check"></i> Actualizaciones automáticas</li>
+        </ul>
+        <button class="plan-btn" onclick="alert('Contratación Yearly Professional')">Seleccionar</button>
+      </div>
+      <div class="plan-card">
+        <span class="plan-badge" style="background:#43a047;">Anual</span>
+        <div class="plan-title">Yearly Enterprise</div>
+        <div class="plan-price">$999<span style="font-size:0.5em; font-weight:400;">/año</span></div>
+        <div class="plan-desc">Ahorra 2 meses. Máxima escalabilidad, seguridad y soporte para grandes empresas.</div>
+        <ul class="plan-features">
+          <li><i class="fa fa-check"></i> Usuarios ilimitados</li>
+          <li><i class="fa fa-check"></i> Integraciones personalizadas</li>
+          <li><i class="fa fa-check"></i> SLA empresarial</li>
+          <li><i class="fa fa-check"></i> Soporte 24/7</li>
+        </ul>
+        <button class="plan-btn" onclick="alert('Contratación Yearly Enterprise')">Seleccionar</button>
+      </div>
+    </div>
+    <div id="pago-modal">
+      <div>
+        <button class="close-modal" onclick="document.getElementById('pago-modal').style.display='none'"><i class='fa fa-times'></i></button>
+        <h2>Completa tu pago</h2>
+        <div id="pago-plan-info"></div>
+        <div>
+          <label>Método de pago:</label>
+          <select id="metodoPago">
+            <option value="qr">QR (Yape/Plin/Wallet)</option>
+            <option value="tarjeta">Tarjeta de crédito/débito</option>
+            <option value="paypal">PayPal</option>
+          </select>
+        </div>
+        <div id="qrPago"></div>
+        <div id="tarjetaPago">
+          <input type="text" placeholder="Número de tarjeta">
+          <input type="text" placeholder="MM/AA" style="width:48%; float:left;">
+          <input type="text" placeholder="CVV" style="width:48%; float:right;">
+          <br style="clear:both;">
+          <button>Pagar</button>
+        </div>
+        <div id="paypalPago">
+          <button><i class="fab fa-paypal"></i> Pagar con PayPal</button>
+        </div>
+        <div class="confirmacion-pago">Recibirás confirmación tras el pago.</div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+      // Mostrar modal de pago y generar QR
+      function mostrarPago(plan, precio) {
+        document.getElementById('pago-modal').style.display = 'flex';
+        document.getElementById('pago-plan-info').innerHTML = `<b>${plan}</b><br><span style='color:#0d47a1;font-size:1.2em;'>${precio}</span>`;
+        document.getElementById('metodoPago').value = 'qr';
+        mostrarMetodoPago();
+        generarQR(plan, precio);
+      }
+      function mostrarMetodoPago() {
+        var metodo = document.getElementById('metodoPago').value;
+        document.getElementById('qrPago').style.display = metodo === 'qr' ? 'block' : 'none';
+        document.getElementById('tarjetaPago').style.display = metodo === 'tarjeta' ? 'block' : 'none';
+        document.getElementById('paypalPago').style.display = metodo === 'paypal' ? 'block' : 'none';
+      }
+      document.getElementById('metodoPago').onchange = mostrarMetodoPago;
+      function generarQR(plan, precio) {
+        var qrDiv = document.getElementById('qrPago');
+        qrDiv.innerHTML = '<canvas id="qr-canvas"></canvas><div style="margin-top:8px;font-size:0.98em;color:#1976d2;">Escanea con Yape, Plin o tu billetera digital</div>';
+        var qr = new QRious({
+          element: document.getElementById('qr-canvas'),
+          value: `Pago Laboratorios R&D - ${plan} - ${precio} - ID:${Math.floor(Math.random()*1000000)}`,
+          size: 180,
+          background: '#fff',
+          foreground: '#1976d2',
+          level: 'H'
+        });
+      }
+      // Asignar eventos a los botones de planes
+      document.querySelectorAll('.plan-card').forEach(function(card) {
+        var btn = card.querySelector('.plan-btn');
+        var plan = card.querySelector('.plan-title').textContent;
+        var precio = card.querySelector('.plan-price').textContent;
+        btn.onclick = function() { mostrarPago(plan, precio); };
+      });
+    </script>
+  </main>
+</body>
+</html>
