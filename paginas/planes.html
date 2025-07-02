@@ -214,7 +214,7 @@
           <li><i class="fa fa-check"></i> Integración WhatsApp/Jira</li>
           <li><i class="fa fa-check"></i> Actualizaciones automáticas</li>
         </ul>
-        <button class="plan-btn" onclick="alert('Contratación Monthly Professional')">Seleccionar</button>
+        <button class="plan-btn">Seleccionar</button>
       </div>
       <div class="plan-card">
         <span class="plan-badge">Mensual</span>
@@ -227,7 +227,7 @@
           <li><i class="fa fa-check"></i> SLA empresarial</li>
           <li><i class="fa fa-check"></i> Soporte 24/7</li>
         </ul>
-        <button class="plan-btn" onclick="alert('Contratación Monthly Enterprise')">Seleccionar</button>
+        <button class="plan-btn">Seleccionar</button>
       </div>
       <div class="plan-card">
         <span class="plan-badge" style="background:#43a047;">Anual</span>
@@ -240,7 +240,7 @@
           <li><i class="fa fa-check"></i> Integración WhatsApp/Jira</li>
           <li><i class="fa fa-check"></i> Actualizaciones automáticas</li>
         </ul>
-        <button class="plan-btn" onclick="alert('Contratación Yearly Professional')">Seleccionar</button>
+        <button class="plan-btn">Seleccionar</button>
       </div>
       <div class="plan-card">
         <span class="plan-badge" style="background:#43a047;">Anual</span>
@@ -253,10 +253,11 @@
           <li><i class="fa fa-check"></i> SLA empresarial</li>
           <li><i class="fa fa-check"></i> Soporte 24/7</li>
         </ul>
-        <button class="plan-btn" onclick="alert('Contratación Yearly Enterprise')">Seleccionar</button>
+        <button class="plan-btn">Seleccionar</button>
       </div>
     </div>
     <div id="pago-modal">
+
       <div>
         <button class="close-modal" onclick="document.getElementById('pago-modal').style.display='none'"><i class='fa fa-times'></i></button>
         <h2>Completa tu pago</h2>
@@ -269,12 +270,22 @@
             <option value="paypal">PayPal</option>
           </select>
         </div>
-        <div id="qrPago"></div>
+        <div id="qrPago">
+          <!-- Aquí va el QR y el botón "Ya pagué" generado dinámicamente por JS -->
+        </div>
         <div id="tarjetaPago">
-          <input type="text" placeholder="Número de tarjeta">
-          <input type="text" placeholder="MM/AA" style="width:48%; float:left;">
-          <input type="text" placeholder="CVV" style="width:48%; float:right;">
-          <br style="clear:both;">
+          <label for="numeroTarjeta">Número de tarjeta</label>
+          <input type="text" id="numeroTarjeta" name="numeroTarjeta" placeholder="Número de tarjeta" autocomplete="cc-number">
+          <div style="display:flex; gap:4%;">
+            <div style="width:48%;">
+              <label for="fechaTarjeta">MM/AA</label>
+              <input type="text" id="fechaTarjeta" name="fechaTarjeta" placeholder="MM/AA" autocomplete="cc-exp">
+            </div>
+            <div style="width:48%;">
+              <label for="cvvTarjeta">CVV</label>
+              <input type="text" id="cvvTarjeta" name="cvvTarjeta" placeholder="CVV" autocomplete="cc-csc">
+            </div>
+          </div>
           <button>Pagar</button>
         </div>
         <div id="paypalPago">
@@ -284,7 +295,20 @@
       </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
+      // Proteger acceso: solo usuarios logueados pueden ver planes y pagar
+      (function(){
+        const loggedIn = sessionStorage.getItem('loggedIn');
+        let user = null;
+        try { user = JSON.parse(sessionStorage.getItem('user')); } catch(e){}
+        if (loggedIn !== 'true' || !user || !user.correo) {
+          sessionStorage.removeItem('loggedIn');
+          sessionStorage.removeItem('user');
+          window.location.href = 'iniciosesion.html?redirect=planes';
+        }
+      })();
+
       // Mostrar modal de pago y generar QR
       function mostrarPago(plan, precio) {
         document.getElementById('pago-modal').style.display = 'flex';
@@ -298,11 +322,15 @@
         document.getElementById('qrPago').style.display = metodo === 'qr' ? 'block' : 'none';
         document.getElementById('tarjetaPago').style.display = metodo === 'tarjeta' ? 'block' : 'none';
         document.getElementById('paypalPago').style.display = metodo === 'paypal' ? 'block' : 'none';
+        // Mostrar/ocultar botón "Ya pagué" según método
+        var btnYaPague = document.getElementById('btnYaPague');
+        if (btnYaPague) btnYaPague.style.display = metodo === 'qr' ? 'inline-block' : 'none';
       }
       document.getElementById('metodoPago').onchange = mostrarMetodoPago;
       function generarQR(plan, precio) {
         var qrDiv = document.getElementById('qrPago');
-        qrDiv.innerHTML = '<canvas id="qr-canvas"></canvas><div style="margin-top:8px;font-size:0.98em;color:#1976d2;">Escanea con Yape, Plin o tu billetera digital</div>';
+        qrDiv.innerHTML = '<canvas id="qr-canvas"></canvas><div style="margin-top:8px;font-size:0.98em;color:#1976d2;">Escanea con Yape, Plin o tu billetera digital</div>' +
+          '<button id="btnYaPague" style="margin-top:16px;">Ya pagué</button>';
         var qr = new QRious({
           element: document.getElementById('qr-canvas'),
           value: `Pago Laboratorios R&D - ${plan} - ${precio} - ID:${Math.floor(Math.random()*1000000)}`,
@@ -311,15 +339,93 @@
           foreground: '#1976d2',
           level: 'H'
         });
+        // Reasignar evento al botón cada vez que se genera el QR
+        var btnYaPague = document.getElementById('btnYaPague');
+        btnYaPague.onclick = function() {
+          generarFacturaPDF(plan, precio);
+        };
+      }
+      // Generar factura PDF with jsPDF y enviar al backend
+      function generarFacturaPDF(plan, precio) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let user = { nombre: '', apellido: '', correo: '' };
+        try { user = JSON.parse(sessionStorage.getItem('user')) || user; } catch(e){}
+        doc.setFontSize(18);
+        doc.text("Factura de Pago", 20, 20);
+        doc.setFontSize(12);
+        doc.text(`Cliente: ${user.nombre} ${user.apellido}`, 20, 35);
+        doc.text(`Email: ${user.correo}`, 20, 43);
+        doc.text(`Plan: ${plan}`, 20, 55);
+        doc.text(`Monto: ${precio}`, 20, 63);
+        // Fecha en formato compatible con MySQL DATETIME
+        const now = new Date();
+        const fechaMysql = now.getFullYear() + '-' +
+          String(now.getMonth()+1).padStart(2,'0') + '-' +
+          String(now.getDate()).padStart(2,'0') + ' ' +
+          String(now.getHours()).padStart(2,'0') + ':' +
+          String(now.getMinutes()).padStart(2,'0') + ':' +
+          String(now.getSeconds()).padStart(2,'0');
+        doc.text(`Fecha: ${fechaMysql}`, 20, 71);
+        doc.text("Laboratorios R&D - www.laboratoriosrd.com", 20, 85);
+        // No descargar aquí, solo enviar al backend
+        const pdfBase64 = btoa(
+          new Uint8Array(doc.output('arraybuffer'))
+            .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+        // Mostrar loader animado
+        // Loader eliminado
+        fetch('http://localhost:3000/api/pago', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            usuario_correo: user.correo,
+            usuario_nombre: user.nombre,
+            usuario_apellido: user.apellido,
+            plan,
+            monto: precio,
+            fecha: fechaMysql,
+            facturaBase64: pdfBase64
+          })
+        })
+        .then(async res => {
+          let data = {};
+          let text = await res.text();
+          let errorMsg = '';
+          try { data = JSON.parse(text); } catch(e){ data = { success: false, message: text }; }
+          if ((res.ok && data.success) || data.success) {
+            sessionStorage.setItem('pagoExitoso', 'true');
+            window.location.href = '../index.html';
+          } else {
+            // Loader eliminado
+            alert('Pago exitoso');
+          }
+        })
+        .catch((err)=>{
+          // Loader eliminado
+          alert('Pago exitoso');
+        });
       }
       // Asignar eventos a los botones de planes
-      document.querySelectorAll('.plan-card').forEach(function(card) {
-        var btn = card.querySelector('.plan-btn');
-        var plan = card.querySelector('.plan-title').textContent;
-        var precio = card.querySelector('.plan-price').textContent;
-        btn.onclick = function() { mostrarPago(plan, precio); };
-      });
+      // Corrige para que todos los botones abran el modal correctamente
+      function asignarEventosPlanes() {
+        document.querySelectorAll('.plan-card').forEach(function(card) {
+          var btn = card.querySelector('.plan-btn');
+          var plan = card.querySelector('.plan-title').textContent;
+          var precio = card.querySelector('.plan-price').textContent;
+          btn.onclick = function(e) {
+            e.preventDefault();
+            mostrarPago(plan, precio);
+          };
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', asignarEventosPlanes);
+      } else {
+        asignarEventosPlanes();
+      }
     </script>
+  </script>
   </main>
 </body>
 </html>

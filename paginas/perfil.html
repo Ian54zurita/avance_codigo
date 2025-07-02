@@ -180,8 +180,38 @@
       <span class="perfil-badge"><i class="fa fa-star"></i> Premium</span>
     </div>
     <div class="perfil-actions">
-      <button onclick="alert('Funcionalidad de editar perfil próximamente')"><i class="fa fa-edit"></i> Editar perfil</button>
-      <button onclick="alert('Funcionalidad de cambiar contraseña próximamente')"><i class="fa fa-key"></i> Cambiar contraseña</button>
+      <button id="btnEditarPerfil"><i class="fa fa-edit"></i> Editar perfil</button>
+      <button id="btnCambiarPassword"><i class="fa fa-key"></i> Cambiar contraseña</button>
+    </div>
+    <!-- Modal Editar Perfil -->
+    <div id="modalEditarPerfil" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);z-index:999;align-items:center;justify-content:center;">
+      <div style="background:#fff;padding:32px 28px 22px 28px;border-radius:18px;min-width:320px;max-width:95vw;box-shadow:0 8px 32px #1976d244;position:relative;">
+        <button onclick="document.getElementById('modalEditarPerfil').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.3em;color:#1976d2;cursor:pointer;"><i class='fa fa-times'></i></button>
+        <h3 style="color:#1976d2;margin-bottom:18px;">Editar perfil</h3>
+        <form id="formEditarPerfil" autocomplete="off">
+          <div style="margin-bottom:12px;"><label for="editNombre">Nombre:</label><input type="text" id="editNombre" name="nombre" required style="width:100%;padding:8px;margin-top:4px;"></div>
+          <div style="margin-bottom:12px;"><label for="editApellido">Apellido:</label><input type="text" id="editApellido" name="apellido" required style="width:100%;padding:8px;margin-top:4px;"></div>
+          <div style="margin-bottom:12px;"><label for="editCelular">Celular:</label><input type="text" id="editCelular" name="celular" required style="width:100%;padding:8px;margin-top:4px;"></div>
+          <div style="margin-bottom:12px;"><label for="editDireccion">Dirección:</label><input type="text" id="editDireccion" name="direccion" required style="width:100%;padding:8px;margin-top:4px;"></div>
+          <div id="msgEditarPerfil" style="color:#d32f2f;margin-bottom:8px;"></div>
+          <button type="submit" style="background:#1976d2;color:#fff;padding:10px 24px;border:none;border-radius:12px;font-weight:600;">Guardar cambios</button>
+        </form>
+      </div>
+    </div>
+    <!-- Modal Cambiar Contraseña -->
+    <div id="modalCambiarPassword" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);z-index:999;align-items:center;justify-content:center;">
+      <div style="background:#fff;padding:32px 28px 22px 28px;border-radius:18px;min-width:320px;max-width:95vw;box-shadow:0 8px 32px #1976d244;position:relative;">
+        <button onclick="document.getElementById('modalCambiarPassword').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.3em;color:#1976d2;cursor:pointer;"><i class='fa fa-times'></i></button>
+        <h3 style="color:#1976d2;margin-bottom:18px;">Cambiar contraseña</h3>
+        <form id="formCambiarPassword" autocomplete="off">
+          <div style="margin-bottom:12px;"><label for="oldPassword">Contraseña actual:</label><input type="password" id="oldPassword" name="oldPassword" required style="width:100%;padding:8px;margin-top:4px;"></div>
+          <div style="margin-bottom:12px;"><label for="newPassword">Nueva contraseña:</label><input type="password" id="newPassword" name="newPassword" required minlength="6" style="width:100%;padding:8px;margin-top:4px;"></div>
+          <div style="margin-bottom:12px;"><label for="confirmPassword">Confirmar nueva contraseña:</label><input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" style="width:100%;padding:8px;margin-top:4px;"></div>
+          <div id="msgCambiarPassword" style="color:#d32f2f;margin-bottom:8px;"></div>
+          <button type="submit" style="background:#1976d2;color:#fff;padding:10px 24px;border:none;border-radius:12px;font-weight:600;">Cambiar contraseña</button>
+        </form>
+      </div>
+    </div>
     </div>
     <div class="perfil-timeline">
       <h4>Actividad reciente</h4>
@@ -190,6 +220,145 @@
       <div class="perfil-timeline-event"><strong>20/06/2025:</strong> Actualizó su perfil</div>
       <div class="perfil-timeline-event"><strong>15/06/2025:</strong> Se registró en Laboratorios R&D</div>
     </div>
+    <div class="perfil-timeline" id="pagosUsuario">
+      <h4>Mis pagos y facturas</h4>
+      <div id="pagos-lista">Cargando pagos...</div>
+    </div>
   </div>
 </body>
 </html>
+<script>
+// MODALES Y FUNCIONES AVANZADAS DE PERFIL
+document.addEventListener('DOMContentLoaded', function() {
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  // Editar perfil
+  document.getElementById('btnEditarPerfil').onclick = function() {
+    document.getElementById('modalEditarPerfil').style.display = 'flex';
+    document.getElementById('editNombre').value = user.nombre || '';
+    document.getElementById('editApellido').value = user.apellido || '';
+    document.getElementById('editCelular').value = user.celular || '';
+    document.getElementById('editDireccion').value = user.direccion || '';
+    document.getElementById('msgEditarPerfil').textContent = '';
+  };
+  document.getElementById('formEditarPerfil').onsubmit = async function(e) {
+    e.preventDefault();
+    const nombre = document.getElementById('editNombre').value.trim();
+    const apellido = document.getElementById('editApellido').value.trim();
+    const celular = document.getElementById('editCelular').value.trim();
+    const direccion = document.getElementById('editDireccion').value.trim();
+    const msg = document.getElementById('msgEditarPerfil');
+    msg.style.color = '#d32f2f';
+    if (!nombre || !apellido || !celular || !direccion) {
+      msg.textContent = 'Todos los campos son obligatorios.';
+      return;
+    }
+    try {
+      const res = await fetch('http://localhost:3000/api/editar-perfil', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo: user.correo, nombre, apellido, celular, direccion })
+      });
+      const data = await res.json();
+      if (data.success) {
+        msg.style.color = '#388e3c';
+        msg.textContent = 'Perfil actualizado correctamente.';
+        // Actualiza sessionStorage y la vista
+        user.nombre = nombre; user.apellido = apellido; user.celular = celular; user.direccion = direccion;
+        sessionStorage.setItem('user', JSON.stringify(user));
+        document.getElementById('nombreUsuario').textContent = nombre + ' ' + apellido;
+        document.getElementById('msgEditarPerfil').textContent = 'Perfil actualizado correctamente.';
+        setTimeout(()=>{ document.getElementById('modalEditarPerfil').style.display='none'; }, 1200);
+      } else {
+        msg.textContent = data.message || 'Error al actualizar perfil.';
+      }
+    } catch (err) {
+      msg.textContent = 'Error de conexión.';
+    }
+  };
+  // Cambiar contraseña
+  document.getElementById('btnCambiarPassword').onclick = function() {
+    document.getElementById('modalCambiarPassword').style.display = 'flex';
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    document.getElementById('msgCambiarPassword').textContent = '';
+  };
+  document.getElementById('formCambiarPassword').onsubmit = async function(e) {
+    e.preventDefault();
+    const oldPassword = document.getElementById('oldPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const msg = document.getElementById('msgCambiarPassword');
+    msg.style.color = '#d32f2f';
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      msg.textContent = 'Todos los campos son obligatorios.';
+      return;
+    }
+    if (newPassword.length < 6) {
+      msg.textContent = 'La nueva contraseña debe tener al menos 6 caracteres.';
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      msg.textContent = 'Las contraseñas no coinciden.';
+      return;
+    }
+    try {
+      const res = await fetch('http://localhost:3000/api/cambiar-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo: user.correo, oldPassword, newPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        msg.style.color = '#388e3c';
+        msg.textContent = 'Contraseña cambiada correctamente.';
+        setTimeout(()=>{ document.getElementById('modalCambiarPassword').style.display='none'; }, 1200);
+      } else {
+        msg.textContent = data.message || 'Error al cambiar contraseña.';
+      }
+    } catch (err) {
+      msg.textContent = 'Error de conexión.';
+    }
+  };
+});
+// Mostrar datos del usuario logueado
+document.addEventListener('DOMContentLoaded', function() {
+  // Validar sesión correctamente: debe existir 'loggedIn' === 'true' y 'user' válido en sessionStorage
+  const loggedIn = sessionStorage.getItem('loggedIn');
+  let user = null;
+  try { user = JSON.parse(sessionStorage.getItem('user')); } catch(e){}
+
+  // Si no hay sesión válida, redirigir a login
+  if (loggedIn !== 'true' || !user || !user.correo) {
+    sessionStorage.removeItem('loggedIn');
+    sessionStorage.removeItem('user');
+    window.location.href = 'iniciosesion.html?redirect=perfil';
+    return;
+  }
+
+  document.getElementById('nombreUsuario').textContent = (user.nombre || 'Usuario') + (user.apellido ? ' ' + user.apellido : '');
+  document.getElementById('emailUsuario').textContent = user.correo || '';
+  if(user.fechaRegistro) document.getElementById('fechaRegistro').textContent = user.fechaRegistro;
+  if(user.nivel) document.getElementById('nivelUsuario').textContent = user.nivel;
+
+  // Mostrar pagos del usuario
+  fetch('http://localhost:3000/api/pagos?correo=' + encodeURIComponent(user.correo))
+    .then(res => res.json())
+    .then(data => {
+      const pagosDiv = document.getElementById('pagos-lista');
+      if (data.success && data.pagos.length) {
+        pagosDiv.innerHTML = data.pagos.map(p =>
+          `<div class=\"pago-item\" style='margin-bottom:10px;'>
+            <strong>${p.fecha}:</strong> ${p.plan} - ${p.monto}
+            ${p.facturaBase64 ? `<a href=\\\"data:application/pdf;base64,${p.facturaBase64}\\\" download=\\\"factura_${p.id||''}.pdf\\\" style=\\\"margin-left:10px;color:#1976d2;\\\">Descargar factura</a>` : ''}
+          </div>`
+        ).join('');
+      } else {
+        pagosDiv.textContent = 'No tienes pagos registrados.';
+      }
+    })
+    .catch(()=>{
+      document.getElementById('pagos-lista').textContent = 'No se pudo cargar el historial de pagos.';
+    });
+});
+</script>

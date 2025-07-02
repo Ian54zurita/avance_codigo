@@ -147,6 +147,112 @@
         if (perfilBtn && perfilBtn.parentNode) perfilBtn.parentNode.remove();
       }
     })();
+
+    // Validaciones globales para correo y campos de texto
+    // Validaciones avanzadas globales
+    window.validarCorreo = function(correo) {
+      // RFC 5322 simple y sin espacios
+      return /^[\w-.]+@[\w-]+\.[a-zA-Z]{2,}$/.test((correo||'').trim());
+    };
+    window.validarTexto = function(texto, min=2, max=50) {
+      if (!texto) return false;
+      const t = texto.trim();
+      // Permite letras, números, espacios y algunos signos básicos
+      return t.length >= min && t.length <= max && /^[\p{L}0-9 .,'-]+$/u.test(t);
+    };
+    window.validarTelefono = function(telefono) {
+      // Permite +, números, espacios, guiones, paréntesis, 7-20 dígitos
+      return /^([+]?\d{1,3}[ -]?)?(\(?\d{2,4}\)?[ -]?)?\d{6,15}$/.test((telefono||'').trim());
+    };
+    window.validarPassword = function(pass) {
+      // Mínimo 8, mayúscula, minúscula, número, caracter especial
+      return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(pass||'');
+    };
+    window.validarDireccion = function(dir) {
+      // Permite letras, números, espacios, #, -, .
+      return /^[\p{L}0-9 .,'#-]{5,80}$/u.test((dir||'').trim());
+    };
+    window.validarSoloLetras = function(texto, min=2, max=40) {
+      // Solo letras y espacios
+      return typeof texto === 'string' && texto.trim().length >= min && texto.trim().length <= max && /^[\p{L} ]+$/u.test(texto.trim());
+    };
+    window.mostrarErrorCampo = function(input, mensaje) {
+      // Muestra mensaje de error debajo del input
+      let err = input.parentNode.querySelector('.msg-error');
+      if (!err) {
+        err = document.createElement('div');
+        err.className = 'msg-error';
+        err.style.color = '#c62828';
+        err.style.fontSize = '0.98em';
+        err.style.marginTop = '4px';
+        input.parentNode.appendChild(err);
+      }
+      err.textContent = mensaje;
+      input.setAttribute('aria-invalid', 'true');
+    };
+    window.limpiarErrorCampo = function(input) {
+      let err = input.parentNode.querySelector('.msg-error');
+      if (err) err.remove();
+      input.removeAttribute('aria-invalid');
+    };
+    // Validación automática en todos los formularios
+    document.addEventListener('submit', function(e) {
+      const form = e.target;
+      let valido = true;
+      // Recorre todos los inputs visibles
+      form.querySelectorAll('input,textarea,select').forEach(function(input) {
+        if (input.type === 'hidden' || input.disabled) return;
+        window.limpiarErrorCampo(input);
+        if (input.required && !input.value.trim()) {
+          window.mostrarErrorCampo(input, 'Este campo es obligatorio');
+          valido = false;
+        } else if (input.type === 'email' && !window.validarCorreo(input.value)) {
+          window.mostrarErrorCampo(input, 'Correo inválido');
+          valido = false;
+        } else if (input.name && input.name.toLowerCase().includes('nombre') && !window.validarSoloLetras(input.value)) {
+          window.mostrarErrorCampo(input, 'Solo letras y espacios');
+          valido = false;
+        } else if (input.name && input.name.toLowerCase().includes('apellido') && !window.validarSoloLetras(input.value)) {
+          window.mostrarErrorCampo(input, 'Solo letras y espacios');
+          valido = false;
+        } else if (input.name && input.name.toLowerCase().includes('cel') && !window.validarTelefono(input.value)) {
+          window.mostrarErrorCampo(input, 'Teléfono inválido');
+          valido = false;
+        } else if (input.name && input.name.toLowerCase().includes('pass') && !window.validarPassword(input.value)) {
+          window.mostrarErrorCampo(input, 'Mín. 8 caracteres, mayúscula, minúscula, número y símbolo');
+          valido = false;
+        } else if (input.name && input.name.toLowerCase().includes('direc') && !window.validarDireccion(input.value)) {
+          window.mostrarErrorCampo(input, 'Dirección inválida');
+          valido = false;
+        }
+      });
+      if (!valido) {
+        e.preventDefault();
+        if (typeof form.reportValidity === 'function') form.reportValidity();
+      }
+    }, true);
+    // Uso: if (!validarCorreo(email)) { ... } / if (!validarTexto(nombre)) { ... }
+    // Mostrar banner de éxito si hay pago reciente
+    (function(){
+      if (sessionStorage.getItem('pagoExitoso') === 'true') {
+        const banner = document.createElement('div');
+        banner.className = 'banner-pago-exito';
+        banner.innerHTML = '<strong>¡Gracias por tu compra!</strong> Tu pago fue registrado y la factura fue enviada a tu correo.';
+        banner.style.background = '#e3f2fd';
+        banner.style.color = '#1976d2';
+        banner.style.padding = '18px 0';
+        banner.style.textAlign = 'center';
+        banner.style.fontWeight = 'bold';
+        banner.style.fontSize = '1.15em';
+        banner.style.boxShadow = '0 2px 8px #1976d233';
+        banner.style.marginBottom = '18px';
+        document.body.insertBefore(banner, document.body.firstChild);
+        setTimeout(() => {
+          banner.remove();
+          sessionStorage.removeItem('pagoExitoso');
+        }, 7000);
+      }
+    })();
     </script>
     <main class="main-column">
         <div class="banner-fondo" style="background:none; box-shadow:none;">

@@ -150,8 +150,9 @@
                     errorMsg.style.color = '#388e3c';
                     errorMsg.textContent = '¡Inicio de sesión exitoso!';
                     errorMsg.style.display = 'block';
-                    // Guardar sesión
+                    // Guardar sesión con todos los datos del usuario
                     sessionStorage.setItem('loggedIn', 'true');
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
                     setTimeout(() => {
                         errorMsg.style.display = 'none';
                         // Redirección inteligente
